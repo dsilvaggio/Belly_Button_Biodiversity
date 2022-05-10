@@ -88,7 +88,9 @@ function buildCharts(sample) {
 
     //  Create the layout for the bar chart. 
     var barLayout = {
-     title: "Top 10 Bacteria Cultures Found"
+     title: "Top 10 Bacteria Cultures Found",
+     width: 600,
+     height: 550
     };
 
     //  Create the trace for the bubble chart.
@@ -97,18 +99,17 @@ function buildCharts(sample) {
       y: sampleValues,
       text: otuLabels, 
       mode: 'markers',
-      marker:{size: d3.select("#selDataset").property("value"),
-      color: d3.select("#selDataset").property("id") 
+      marker:{size: sampleValues,
+      color: otuIds
     }
     }];
 
     //  Create the layout for the bubble chart.
     var bubbleLayout = {
-      title: "Bacteria Cultures per Sample",
-      xaxis: { text: "OTU ID" },
-      showlegend: false, 
+      title: "Bacteria Cultures Per Sample",
+      xaxis: {title:{text: 'OTU ID'}},
       height: 600,
-      width: 1000,
+      width: 1200,
       hovermode: 'closest'
     };
 
@@ -120,7 +121,7 @@ function buildCharts(sample) {
     //  Create the trace for the gauge chart.
     var gaugeData = [{
      value: washFrequency,
-     title: { text: "Scrubs per Week" },
+     title: { text: "<b> Belly Button Washing Frequency</b><br>Scrubs per Week" },
      type: 'indicator',
      mode: 'gauge+number',
      gauge:{
