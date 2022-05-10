@@ -53,27 +53,31 @@ function buildMetadata(sample) {
   });
 }
 
-// 1. Create the buildCharts function.
+//  Create the buildCharts function.
 function buildCharts(sample) {
-  // 2. Use d3.json to load and retrieve the samples.json file 
+  //  Use d3.json to load and retrieve the samples.json file 
   d3.json("samples.json").then((data) => {
-    // 3. Create a variable that holds the samples array. 
+    //  Create a variable that holds the samples array. 
     var samples = data.samples;
-    // 4. Create a variable that filters the samples for the object with the desired sample number.
+    //  Create a variable that filters the samples for the object with the desired sample number.
     var filteredSamples = samples.filter(sampleNum => sampleNum.id ==sample);
-    //  5. Create a variable that holds the first sample in the array.
+    //  Create a variable that filters the metadata array for the object with the desired sample number.
+    var filteredMeta = data.metadata.filter(sampleNum => sampleNum.id ==sample);
+    //   Create a variable that holds the first sample in the array.
     var filteredResults = filteredSamples[0];
+    //  Create a variable that holds the first sample in the metadata array.
+    var filterMetaResults = filteredMeta[0];
 
-    // 6. Create variables that hold the otu_ids, otu_labels, and sample_values.
+    //  Create variables that hold the otu_ids, otu_labels, and sample_values.
     var otuIds = filteredResults.otu_ids;
     var otuLabels = filteredResults.otu_labels;
     var sampleValues = filteredResults.sample_values;
-    // 7. Create the yticks for the bar chart.
-    // Hint: Get the the top 10 otu_ids and map them in descending order  
-    //  so the otu_ids with the most bacteria are last. 
+    //  Create a variable that holds the washing frequency.
+    var washFrequency = parseFloat(filterMetaResults.wfreq);
+    //  Create the yticks for the bar chart.
     var yticks = otuIds.slice(0,10).map(otuId => `OTU ${otuId}`).reverse();
 
-    // 8. Create the trace for the bar chart. 
+    //  Create the trace for the bar chart. 
     var barData = [{
       x:sampleValues.slice(0,10).reverse(),
       y: yticks,
@@ -82,11 +86,64 @@ function buildCharts(sample) {
       text: otuLabels.slice(0,10).reverse()
     }];
 
-    // 9. Create the layout for the bar chart. 
+    //  Create the layout for the bar chart. 
     var barLayout = {
      title: "Top 10 Bacteria Cultures Found"
     };
-    // 10. Use Plotly to plot the data with the layout. 
+
+    //  Create the trace for the bubble chart.
+    var bubbleData = [{
+      x: otuIds,
+      y: sampleValues,
+      text: otuLabels, 
+      mode: 'markers',
+      marker:{size: d3.select("#selDataset").property("value"),
+      color: d3.select("#selDataset").property("id") 
+    }
+    }];
+
+    //  Create the layout for the bubble chart.
+    var bubbleLayout = {
+      title: "Bacteria Cultures per Sample",
+      xaxis: { text: "OTU ID" },
+      showlegend: false, 
+      height: 600,
+      width: 1000,
+      hovermode: 'closest'
+    };
+
+    //  Use Plotly to plot the data with the layout. 
     Plotly.newPlot("bar", barData, barLayout);
+    // Use Plotly to plot the data with the layout.
+    Plotly.newPlot("bubble", bubbleData, bubbleLayout); 
+  
+    //  Create the trace for the gauge chart.
+    var gaugeData = [{
+     value: washFrequency,
+     title: { text: "Scrubs per Week" },
+     type: 'indicator',
+     mode: 'gauge+number',
+     gauge:{
+       axis:{range: [0,10]},
+       bar: {color: 'black'},
+       steps: [
+         {range: [0,2], color: 'red'},
+         {range: [2,4], color: 'orange'},
+         {range: [4,6], color: 'yellow'},
+         {range: [6,8], color: 'yellowgreen'},
+         {range: [8,10], color: 'darkgreen'}
+       ]
+      }
+    }];
+    
+    //  Create the layout for the gauge chart.
+    var gaugeLayout = { 
+     width: 700, 
+     heigh: 600, 
+     margin: { t: 20, b: 40, l:100, r:100 }
+    };
+
+    //  Use Plotly to plot the gauge data and layout.
+    Plotly.newPlot("gauge", gaugeData, gaugeLayout);
   });
 }
