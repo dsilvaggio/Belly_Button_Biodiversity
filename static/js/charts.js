@@ -3,7 +3,7 @@ function init() {
   var selector = d3.select("#selDataset");
 
   // Use the list of sample names to populate the select options
-  d3.json("samples.json").then((data) => {
+  d3.json("static/data/samples.json").then((data) => {
     var sampleNames = data.names;
 
     sampleNames.forEach((sample) => {
@@ -32,7 +32,7 @@ function optionChanged(newSample) {
 
 // Demographics Panel 
 function buildMetadata(sample) {
-  d3.json("samples.json").then((data) => {
+  d3.json("static/data/samples.json").then((data) => {
     var metadata = data.metadata;
     // Filter the data for the object with the desired sample number
     var resultArray = metadata.filter(sampleObj => sampleObj.id == sample);
@@ -56,7 +56,7 @@ function buildMetadata(sample) {
 //  Create the buildCharts function.
 function buildCharts(sample) {
   //  Use d3.json to load and retrieve the samples.json file 
-  d3.json("samples.json").then((data) => {
+  d3.json("static/data/samples.json").then((data) => {
     //  Create a variable that holds the samples array. 
     var samples = data.samples;
     //  Create a variable that filters the samples for the object with the desired sample number.
@@ -83,14 +83,15 @@ function buildCharts(sample) {
       y: yticks,
       type: "bar",
       orientation: 'h',
-      text: otuLabels.slice(0,10).reverse()
+      text: otuLabels.slice(0,10).reverse(),
+      marker: {color: 'rgb(113,192,243)'}
     }];
 
     //  Create the layout for the bar chart. 
     var barLayout = {
      title: "Top 10 Bacteria Cultures Found",
      width: 600,
-     height: 550
+     height: 550,
     };
 
     //  Create the trace for the bubble chart.
@@ -100,7 +101,8 @@ function buildCharts(sample) {
       text: otuLabels, 
       mode: 'markers',
       marker:{size: sampleValues,
-      color: otuIds
+      color: otuIds,
+      colorscale: 'Rainbow'
     }
     }];
 
@@ -139,7 +141,7 @@ function buildCharts(sample) {
     
     //  Create the layout for the gauge chart.
     var gaugeLayout = { 
-     width: 700, 
+     width: 600, 
      heigh: 600, 
      margin: { t: 20, b: 40, l:100, r:100 }
     };
